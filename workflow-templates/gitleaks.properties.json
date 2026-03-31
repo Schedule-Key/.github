@@ -1,0 +1,6 @@
+{
+  "name": "Gitleaks Secret Scanning",
+  "description": "Scans for hardcoded secrets on every PR and push. Fails the check if secrets are detected.",
+  "iconName": "lock",
+  "categories": ["security"]
+}
