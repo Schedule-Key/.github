@@ -21,7 +21,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+      - name: Install gitleaks
+        run: |
+          curl -sSfL https://github.com/gitleaks/gitleaks/releases/download/v8.24.3/gitleaks_8.24.3_linux_x64.tar.gz \
+            | sudo tar xz -C /usr/local/bin gitleaks
+
+      - name: Scan for secrets (PR)
+        if: github.event_name == 'pull_request'
+        run: gitleaks detect --source . --log-opts="${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}" --no-banner -v
+
+      - name: Scan for secrets (push)
+        if: github.event_name == 'push'
+        run: gitleaks detect --source . --log-opts="-1" --no-banner -v
